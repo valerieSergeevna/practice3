@@ -151,23 +151,24 @@ namespace task2 {
 			default: return Color::FromName("Green"); break;
 			}
 		}
-		private: void Paint_tree(Tree_Node ^tree, Point top, Point left, Point right, Graphics ^Графика)
+	/*	private: void Paint_tree(Tree_Node ^tree, Point top, Point left, Point right, Graphics ^Графика)
 		{
 
 			Color CurrentColor;
 			CurrentColor = choose_color(tree->level);
 
-			Pen^ Перо;
-			Перо = gcnew Pen(CurrentColor);
+			Pen^ Brush;
+			
+			Brush = gcnew Pen(CurrentColor);
 			array<Point>^ curvePoints;
 			curvePoints = gcnew array<Point>(3);
 
 			curvePoints[0] = top;
 			curvePoints[1] = right;
 			curvePoints[2] = left;
-			Графика->DrawPolygon(Перо, curvePoints);
+			Графика->DrawPolygon(Brush, curvePoints);
 
-		}
+		}*/
 
 		private: void Paint_TreeBrunch(Tree_Node ^tree, Graphics ^Grafica, Color ^SomeStrangeColor)
 		{
@@ -189,9 +190,10 @@ namespace task2 {
 				Paint_Tree(tree->next_one, Grafica);
 				Grafica->DrawLine(brush, tree->treeX, tree->treeY, tree->next_two->treeX, tree->next_two->treeY);
 				Paint_Tree(tree->next_two, Grafica);
-				CurrentColor = Color::White;
 				Grafica->DrawLine(brush, tree->treeX, tree->treeY, tree->next_three->treeX, tree->next_three->treeY);
 				Paint_Tree(tree->next_three, Grafica);
+				Grafica->DrawLine(brush, tree->treeX, tree->treeY, tree->next_four->treeX, tree->next_four->treeY);
+				Paint_Tree(tree->next_four, Grafica);
 
 			}
 		}
@@ -203,7 +205,8 @@ namespace task2 {
 				//int NewRadius = (Sphere->Radius / 2);
 
 				int NewLevel = (tree->level + 1);
-				int x_s = (tree->x2 + tree->x1) / 2;
+				//для INT
+			/*	int x_s = (tree->x2 + tree->x1) / 2;
 				int y_s = (tree->y2 + tree->y1) / 2;
 				p = gcnew Tree_Node((4*x_s - tree->x3)/3, (4 * y_s - tree->y3) / 3,
 					((2*tree->x1+tree->x2)/3), ((2 * tree->y1 + tree->y2) / 3), ((2 * tree->x2 + tree->x1) / 3), ((2 * tree->y2 + tree->y1) / 3),tree->treeX - (3 * tree->treeX_dif), tree->treeY + start_height, (tree->treeX_dif / 3),NewLevel);
@@ -221,51 +224,76 @@ namespace task2 {
 					((2 * tree->x3 + tree->x2) / 3), ((2 * tree->y3 + tree->y2) / 3), ((2 * tree->x2 + tree->x3) / 3), ((2 * tree->y2 + tree->y3) / 3), 
 					 tree->treeX + (3 * tree->treeX_dif), tree->treeY + start_height, (tree->treeX_dif / 3), NewLevel);
 				tree->next_three = p;
+				Generate_Tree(tree->next_three);*/
+				
+				p = gcnew Tree_Node(tree->x1, tree->y1,
+					(2* tree->x1+ tree->x2)/3, ((2 * tree->y1 + tree->y2) / 3), tree->treeX - (3 * tree->treeX_dif), tree->treeY + start_height, (tree->treeX_dif / 3), NewLevel);
+				tree->next_one = p;
+				Generate_Tree(tree->next_one);
+				p = gcnew Tree_Node((2 * tree->x1 + tree->x2) / 3, ((2 * tree->y1 + tree->y2) / 3),
+					(( tree->x1 + tree->x2) / 2)+((tree->y1- tree->y2)/(2*sqrt(3.0))), ((tree->y1 + tree->y2) / 2) + ((tree->x2 - tree->x1) / (2 * sqrt(3.0))),  tree->treeX, tree->treeY + start_height, (tree->treeX_dif / 3), NewLevel);
+				tree->next_two = p;
+				Generate_Tree(tree->next_two);
+				p = gcnew Tree_Node(((tree->x1 + tree->x2) / 2) + ((tree->y1 - tree->y2) / (2 * sqrt(3.0))), ((tree->y1 + tree->y2) / 2) + ((tree->x2 - tree->x1) / (2 * sqrt(3.0))),
+					(2 * tree->x2 + tree->x1) / 3, ((2 * tree->y2 + tree->y1) / 3),
+					tree->treeX + (3 * tree->treeX_dif), tree->treeY + start_height, (tree->treeX_dif / 3), NewLevel);
+				tree->next_three = p;
 				Generate_Tree(tree->next_three);
-
+				p = gcnew Tree_Node(
+					(2 * tree->x2 + tree->x1) / 3, ((2 * tree->y2 + tree->y1) / 3), tree->x2, tree->y2,
+					tree->treeX + (3 * tree->treeX_dif), tree->treeY + start_height, (tree->treeX_dif / 3), NewLevel);
+				tree->next_four = p;
+				Generate_Tree(tree->next_four);
 			}
 		}
 
 		//рисуем фрактал
-		private: void draw_part_of_fractal(Tree_Node ^tree, Point top, Point left, Point right, Graphics ^Графика)
+		private: void draw_part_of_fractal(Tree_Node^ tree,  Point left, Point right, Graphics^ Графика, bool first)
 		{
-
 			Color CurrentColor;
-			CurrentColor = choose_color(tree->level);
+			if (first)
+				CurrentColor = choose_color(tree->level);
+			else CurrentColor = choose_color(tree->level-1);
 
-			Pen^ Перо;
-			Перо = gcnew Pen(CurrentColor);
+			Pen^ Brush;
+			Brush = gcnew Pen(CurrentColor);
 			array<Point>^ curvePoints;
 			curvePoints = gcnew array<Point>(3);
 
-			curvePoints[0] = top;
-			curvePoints[1] = right;
-			curvePoints[2] = left;
-			Графика->DrawLine(Перо, curvePoints[0], curvePoints[1]);
-			Графика->DrawLine(Перо, curvePoints[2], curvePoints[1]);
-			/*(if (check>1)
-			{
-				CurrentColor = Color::White;
-				Pen^ Перо2;
-				Перо2 = gcnew Pen(CurrentColor);
-				Графика->DrawLine(Перо2, curvePoints[2], curvePoints[0]);
-			} else*/
-			Графика->DrawLine(Перо, curvePoints[2], curvePoints[0]);
-
+			curvePoints[0] = right;
+			curvePoints[1] = left;
+			Графика->DrawLine(Brush, curvePoints[0], curvePoints[1]);
+		//	Графика->DrawLine(Brush, curvePoints[2], curvePoints[1]);
+		/*	if (!first) {
+				auto pen = gcnew Pen(Color::White, 2);
+				Графика->DrawLine(pen, curvePoints[2], curvePoints[0]);
+			}
+			else
+				Графика->DrawLine(Brush, curvePoints[2], curvePoints[0]);*/
 		}
 
-	private: void paint_fractal(Tree_Node ^tree, Graphics^ Графика)
+	private: void paint_fractal(Tree_Node ^tree, Graphics^ Графика, bool first)
 	{
-		Point top = Point(tree->x3, tree->y3);
+		//Point top = Point(tree->x3, tree->y3);
 		Point left = Point(tree->x2, tree->y2);
 		Point right = Point(tree->x1, tree->y1);
 		//int Level = tree->level;
-		draw_part_of_fractal(tree,top, left, right, Графика);
+		draw_part_of_fractal(tree, left, right, Графика,first);
+		
 		if (tree->level != MaxLevel)
 		{
-			paint_fractal(tree->next_one, Графика);
-			paint_fractal(tree->next_two, Графика);
-			paint_fractal(tree->next_three, Графика);
+			paint_fractal(tree->next_one, Графика, false);
+			paint_fractal(tree->next_two, Графика,true);
+			paint_fractal(tree->next_three, Графика,true);
+			paint_fractal(tree->next_four, Графика, false);
+			Point left_white = Point(tree->next_two->x1, tree->next_two->y1);
+			Point right_white = Point(tree->next_three->x2, tree->next_three->y2);
+			Pen^ Brush;
+			Brush = gcnew Pen(Color::White);
+			Brush->Width = 3;
+			Brush->DashStyle = System::Drawing::Drawing2D::DashStyle::Solid;
+			
+			Графика->DrawLine(Brush, left_white, right_white);
 		
 		}
 
@@ -281,23 +309,31 @@ namespace task2 {
 		MaxLevel = Convert::ToInt32(textBox1->Text);//Число уровней фрактала
 		if (MaxLevel < 1) { error(MaxLevel); MaxLevel = 1; }
 		if (MaxLevel > 10) { error(MaxLevel); MaxLevel = 10; }
-		int X1, Y1, X2, Y2, X3, Y3;
+		float X1, Y1, X2, Y2, X3, Y3;
 		X1 = 50;
 		Y1 = 200;
 		X2 = 200;
 		Y2 = 200;
 
-		int x_s_ = (X2+ X1) / 2;
-		int y_s_ = (Y2 + Y1) / 2;
-		Y3 = Y2-(X2 - X1)*sqrt(3.0) / 2;
-		X3 = X1+(X2 - X1) / 2;
-		Tree_Node ^tree;
-		tree = gcnew Tree_Node(X1, Y1,X2,Y2,X3,Y3, (710 / 2), (start_height / 2), (400 / 7),1);
-		Generate_Tree(tree);
+		//Y3 = Y2-(X2 - X1)*sqrt(3.0) / 2;
+		//X3 = X1+(X2 - X1) / 2;
+		Y3 = (Y2 + Y1) / 2 + (X1-X2)*sqrt(3.0) / 2;
+		X3 = (X2 + X1) / 2 + (Y2 - Y1)*sqrt(3.0) / 2;
+		Tree_Node ^side1, ^side2, ^side3;
+		side1 = gcnew Tree_Node(X1, Y1,X2,Y2, (330 / 2), (start_height / 2), (265 / 7),1);
+		Generate_Tree(side1);
+
+		side2 = gcnew Tree_Node(X3, Y3, X1, Y1, (330 / 2), (start_height / 2), (265 / 7), 1);
+		Generate_Tree(side2);
+
+		side3 = gcnew Tree_Node(X2, Y2,X3, Y3,  (330 / 2), (start_height / 2), (265 / 7), 1);
+		Generate_Tree(side3);
 		Bitmap ^SomeStrangeTreebitmab = gcnew Bitmap(pictureBox2->Width, pictureBox2->Height);
 		Graphics^ GraphikaBitmap = Graphics::FromImage(SomeStrangeTreebitmab);
 		GraphikaBitmap->Clear(Color::White);
-		Paint_Tree(tree, GraphikaBitmap);
+		Paint_Tree(side1, GraphikaBitmap);
+		Paint_Tree(side2, GraphikaBitmap);
+		Paint_Tree(side3, GraphikaBitmap);
 		pictureBox2->Image = SomeStrangeTreebitmab;
 
 		/*SomeStrangeSphere ^SphereHead2;
@@ -308,7 +344,9 @@ namespace task2 {
 		*/
 
 		Graphics^ Графика2 = pictureBox1->CreateGraphics();
-		paint_fractal(tree, Графика2);
+		paint_fractal(side1, Графика2, true);
+		paint_fractal(side2, Графика2, true);
+		paint_fractal(side3, Графика2, true);
 
 		/*SomeStrangeSphere ^SphereHead3;
 		int radius3 = 49;
